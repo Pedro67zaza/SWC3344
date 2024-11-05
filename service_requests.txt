@@ -1,0 +1,10 @@
+TP001;Afizudin Firdaus;VS972;GC00A;Oil Change;500;5/11/24;4 hours
+TP002;Alya Sarah;VS457;GC00B;Tire Rotation;300;5/11/24;2 hours
+TP003;Brian Lee;VS891;GC00C;Battery Replacement;750;5/11/24;3 hours
+TP004;Chong Wei;VS112;GC00D;Brake Inspection;400;5/11/24;2.5 hours
+TP005;Diana Razak;VS789;GC00E;Engine Tune-Up;1200;5/11/24;5 hours
+TP006;Ella Wong;VS345;GC00F;Transmission Check;950;5/11/24;4.5 hours
+TP001;Afizudin Firdaus;VS972;GC00G;Air Conditioning Service;600;5/11/24;3 hours
+TP008;Grace Tan;VS123;GC00H;Wheel Alignment;550;5/11/24;2 hours
+TP009;Harith Iskandar;VS567;GC00I;Oil Change;500;5/11/24;4 hours
+TP010;Izzy Zainal;VS901;GC00J;Exhaust System Repair;800;5/11/24;3.5 hours
