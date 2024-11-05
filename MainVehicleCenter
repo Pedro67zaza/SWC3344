@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.*;
+
+public class MainVehicleCenter {
+    public static void main(String[] args) {
+        List<CustomerInfo> customerList = new LinkedList<>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("service_requests.txt"));
+
+            String inData;
+            while ((inData = br.readLine()) != null) {
+                // Parse the input line and extract values
+                StringTokenizer st = new StringTokenizer(inData, ";");
+                String id = st.nextToken();
+                String name = st.nextToken();
+                String plateNumber = st.nextToken();
+                String service_id = st.nextToken();
+                String service_type = st.nextToken();
+                double service_cost = Double.parseDouble(st.nextToken());
+                String service_date = st.nextToken();
+                String service_completionTime = st.nextToken();
+
+                // Create a new ServiceInfo object for the service
+                ServiceInfo service = new ServiceInfo(service_id, service_type, service_cost, service_date, service_completionTime);
+
+                // Check if this customer already exists in customerList
+                CustomerInfo customer = findCustomerById(customerList, id);
+                if (customer == null) {
+                    // If the customer doesn't exist, create a new CustomerInfo object
+                    customer = new CustomerInfo(id, name, plateNumber);
+                    customerList.add(customer);
+                }
+                
+                // Add the service to the existing or new customer
+                customer.addItem(service);
+            }
+
+            // Print all customers and their services
+            for (CustomerInfo customer : customerList) {
+                System.out.println(customer);
+            }
+
+            br.close();
+        } catch (Exception ex) {
+            
+        }
+    }
+
+    // Helper method to find a customer by ID
+    private static CustomerInfo findCustomerById(List<CustomerInfo> customerList, String id) {
+        for (CustomerInfo customer : customerList) {
+            if (customer.getCustomerId().equals(id)) {
+                return customer;
+            }
+        }
+        return null;
+    }
+}
