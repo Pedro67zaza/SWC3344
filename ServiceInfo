@@ -1,0 +1,91 @@
+
+public class ServiceInfo
+{
+    //declaration of attributes
+    private String serviceId;
+    private String serviceType;
+    private double serviceCost;
+    private String serviceDate;
+    private String estimatedCompletionTime;
+    private int selectedQuantity;
+    //constructor without parameters 
+    public ServiceInfo() {
+        serviceId = null;
+        serviceType = null;
+        serviceCost  = 0.0;
+        serviceDate = null;
+        estimatedCompletionTime = null;
+        selectedQuantity = 0;
+    }
+    //constructor with parameter
+    public ServiceInfo(String id, String type, double cost, String date, String completionTime) {
+        serviceId = id;
+        serviceType = type;
+        serviceCost = cost;
+        serviceDate = date;
+        estimatedCompletionTime = completionTime;
+        selectedQuantity = 0;
+    }
+    //Mutator methods
+    public void setServiceId(String id) {
+        serviceId = id;
+    }
+
+    public void setServiceType(String type) {
+        serviceType = type;
+    }
+
+    public void setServiceCost(double cost) {
+        serviceCost = cost;
+    }
+
+    public void setServiceDate(String date) {
+        serviceDate = date;
+    }
+
+    public void setEstimatedCompletionTime(String completionTime) {
+        estimatedCompletionTime = completionTime;
+    }
+
+    public void setSelectedQuantity(int quantity) {
+        selectedQuantity = quantity;
+    }
+    //accessor methods
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public double getServiceCost() {
+        return serviceCost;
+    }
+
+    public String getServiceDate() {
+        return serviceDate;
+    }
+
+    public String getServiceEstimatedCompletionTime() {
+        return estimatedCompletionTime;
+    }
+
+    public int getSelectedQuantity() {
+        return selectedQuantity;
+    }
+    //increment the quantity
+    public void incrementQuantity() {
+        selectedQuantity++;
+    }
+    //print the output
+    @Override
+    public String toString() {
+        return "Service ID: " + serviceId + 
+        ", Type: " + serviceType + 
+        ", Cost: $" + serviceCost + 
+        ", Date: " + serviceDate + 
+        ", Estimated Completion: " + estimatedCompletionTime;
+    }
+
+}
