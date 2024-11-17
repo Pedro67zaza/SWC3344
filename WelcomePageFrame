@@ -1,0 +1,53 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class WelcomePageFrame implements ActionListener{
+    //declaration of attributes
+    private JFrame frame;
+    private JLabel imageLabel;
+    private JPanel imagePanel;
+    private JButton btnStart;
+
+    public WelcomePageFrame() {
+        //create the frame
+        frame = new JFrame();
+        frame.setTitle("Dot Vehicle Service Center");
+        frame.setSize(700, 500);
+        frame.setLayout(new BorderLayout());
+
+        // Image Label (to display image)
+        imageLabel = new JLabel();
+        imageLabel.setIcon(new ImageIcon("PROJECT SWC.jpg"));
+
+        // Panel for the image label
+        imagePanel = new JPanel(new BorderLayout());
+        imagePanel.add(imageLabel, BorderLayout.CENTER);//add the image to the panel
+
+        //create the start button
+        btnStart = new JButton("Start");
+
+        //add the panel and button to the frame
+        frame.add(imagePanel, BorderLayout.CENTER);
+        frame.add(btnStart, BorderLayout.SOUTH);
+
+        frame.setVisible(true);//make the frame visible
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//close the frame
+
+        btnStart.addActionListener(this);//add action listener for the start button
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getSource()==btnStart)//if the start button is pressed 
+        {
+            new MainVehicleCenter();//instantiate the MainVehicleCenter class
+            frame.dispose();//close the current frame
+        }
+    }
+    //main method 
+    public static void main(String[] args) {
+        new WelcomePageFrame();
+    }
+}
