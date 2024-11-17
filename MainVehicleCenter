@@ -1,59 +1,446 @@
 import java.io.*;
 import java.util.*;
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import javax.swing.JTextArea;
+import javax.swing.JPanel;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import java.awt.Font;
+import java.awt.GridLayout;
+import javax.swing.JScrollPane;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JOptionPane;
 
-public class MainVehicleCenter {
-    public static void main(String[] args) {
-        List<CustomerInfo> customerList = new LinkedList<>();
+public class MainVehicleCenter implements ActionListener{
+    //declare the attributes
+    private JFrame frame, subFrame;
+    private JTextArea lane1, lane2, lane3;
+    private JPanel headerPanel, countersPanel, bottomPanel;
+    private JLabel counterLabel;
+    private JButton btnShowData, btnAddNewCustomer;
+    private JButton btnNextQueue1, btnNextQueue2, btnNextQueue3, btnBack;
+    private JButton btnPayment1, btnPayment2, btnPayment3;
+    private JButton btnReceipt1, btnReceipt2, btnReceipt3;
+    private JButton btnRecord;
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("service_requests.txt"));
+    private List<CustomerInfo> customerList; 
+    private Queue<CustomerInfo> queue1, queue2, queue3;
+    private Stack<CustomerInfo> stack1, stack2, stack3, completeStack;
 
-            String inData;
-            while ((inData = br.readLine()) != null) {
-                // Parse the input line and extract values
-                StringTokenizer st = new StringTokenizer(inData, ";");
-                String id = st.nextToken();
-                String name = st.nextToken();
-                String plateNumber = st.nextToken();
-                String service_id = st.nextToken();
-                String service_type = st.nextToken();
-                double service_cost = Double.parseDouble(st.nextToken());
-                String service_date = st.nextToken();
-                String service_completionTime = st.nextToken();
+    private boolean hasReadFile = false;
+    private int laneAlternator;
 
-                // Create a new ServiceInfo object for the service
-                ServiceInfo service = new ServiceInfo(service_id, service_type, service_cost, service_date, service_completionTime);
+    //constructor (to create the frame)
+    public MainVehicleCenter() {
+        //creating the main frame
+        frame = new JFrame();
+        frame.setSize(700,500);
+        frame.setTitle("Vehicle Service Center");
+        frame.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5,5,5,5);
 
-                // Check if this customer already exists in customerList
-                CustomerInfo customer = findCustomerById(customerList, id);
-                if (customer == null) {
-                    // If the customer doesn't exist, create a new CustomerInfo object
-                    customer = new CustomerInfo(id, name, plateNumber);
-                    customerList.add(customer);
+        //the frame will be divided into three panels (header,middle,lower)
+        //setting up the header
+        headerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcHeader = new GridBagConstraints();
+        gbcHeader.insets = new Insets(5,5,5,5);
+        //create the customers counter label to display the amount of customers left
+        counterLabel = new JLabel("Customer: "+0);//add list
+        counterLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        gbcHeader.gridx = 0;
+        gbcHeader.gridy = 0;
+        headerPanel.add(counterLabel, gbcHeader);
+        //create the show data button to show the added data
+        btnShowData = new JButton("Show Data");
+        gbcHeader.gridx = 1;
+        headerPanel.add(btnShowData, gbcHeader);
+        //create the add new customer button to read the input file
+        btnAddNewCustomer = new JButton("Add new Customer");
+        gbcHeader.gridx = 2;
+        headerPanel.add(btnAddNewCustomer, gbcHeader);
+
+        //add it to the frame
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3; // Span across three columns
+        gbc.fill = GridBagConstraints.HORIZONTAL;//fill the panel up horizontally
+        frame.add(headerPanel, gbc);
+
+        //create the counter panel(lane 1, lane 2, lane 3)
+        countersPanel = new JPanel(new GridLayout(1,3,10,10));
+
+        //setting up lane 1
+        //create a separate panel for each lane
+        JPanel lanePanel1 = new JPanel(new BorderLayout(5,5));
+        JLabel laneLabel1 = new JLabel("Lane 1: ");
+        laneLabel1.setFont(new Font("Arial", Font.BOLD, 16));
+        lanePanel1.add(laneLabel1, BorderLayout.NORTH);
+        //create the text area
+        lane1 = new JTextArea();
+        lane1.setEditable(false);//make the text area uneditable 
+        lanePanel1.add(new JScrollPane(lane1), BorderLayout.CENTER);//add scroll to the text area
+        //create a separate panel for the buttons
+        JPanel btnPanel1 = new JPanel(new GridLayout(1,3,5,5));
+        //create the buttons
+        btnNextQueue1 = new JButton("Next Queue");
+        btnPayment1 = new JButton("Payment");
+        btnReceipt1 = new JButton("Receipt");
+        //add the buttons to the BUTTON PANEL
+        btnPanel1.add(btnNextQueue1);
+        btnPanel1.add(btnPayment1);
+        btnPanel1.add(btnReceipt1);
+        //add the BUTTON PANEL to the LANE PANEL
+        lanePanel1.add(btnPanel1, BorderLayout.SOUTH);
+        //add the LANE PANEL to the COUNTER PANEL
+        countersPanel.add(lanePanel1);
+
+        //setting up lane 2
+        //create a separate panel for each lane
+        JPanel lanePanel2 = new JPanel(new BorderLayout(5,5));
+        JLabel laneLabel2 = new JLabel("Lane 2: ");
+        laneLabel2.setFont(new Font("Arial", Font.BOLD, 16));
+        lanePanel2.add(laneLabel2, BorderLayout.NORTH);
+        //create the text area
+        lane2 = new JTextArea();
+        lane2.setEditable(false);//make the text area uneditable 
+        lanePanel2.add(new JScrollPane(lane2), BorderLayout.CENTER);//add scroll to the text area
+        //create a separate panel for the buttons
+        JPanel btnPanel2 = new JPanel(new GridLayout(1,3,5,5));
+        //create the buttons
+        btnNextQueue2 = new JButton("Next Queue");
+        btnPayment2 = new JButton("Payment");
+        btnReceipt2 = new JButton("Receipt");
+        //add the buttons to the BUTTON PANEL
+        btnPanel2.add(btnNextQueue2);
+        btnPanel2.add(btnPayment2);
+        btnPanel2.add(btnReceipt2);
+        //add the BUTTON PANEL to the LANE PANEL
+        lanePanel2.add(btnPanel2, BorderLayout.SOUTH);
+        //add the LANE PANEL to the COUNTER PANEL
+        countersPanel.add(lanePanel2);
+
+        //setting up lane 3
+        //create a separate panel for each lane
+        JPanel lanePanel3 = new JPanel(new BorderLayout(5,5));
+        JLabel laneLabel3 = new JLabel("Lane 3: ");
+        laneLabel3.setFont(new Font("Arial", Font.BOLD, 16));
+        lanePanel3.add(laneLabel3, BorderLayout.NORTH);
+        //create the text area
+        lane3 = new JTextArea();
+        lane3.setEditable(false);//make the text area uneditable 
+        lanePanel3.add(new JScrollPane(lane3), BorderLayout.CENTER);//add scroll to the text area
+        //create a separate panel for the buttons
+        JPanel btnPanel3 = new JPanel(new GridLayout(1,3,5,5));
+        //create the buttons
+        btnNextQueue3 = new JButton("Next Queue");
+        btnPayment3 = new JButton("Payment");
+        btnReceipt3 = new JButton("Receipt");
+        //add the buttons to the BUTTON PANEL
+        btnPanel3.add(btnNextQueue3);
+        btnPanel3.add(btnPayment3);
+        btnPanel3.add(btnReceipt3);
+        //add the BUTTON PANEL to the LANE PANEL
+        lanePanel3.add(btnPanel3, BorderLayout.SOUTH);
+        //add the LANE PANEL to the COUNTER PANEL
+        countersPanel.add(lanePanel3);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3; // Span across three columns
+        gbc.fill = GridBagConstraints.BOTH; //fill the counter panel up horizontally and vertically
+        gbc.weightx = 1.0;//dynamically change the size horizontally
+        gbc.weighty = 1.0;//dynamically change the size vertically
+        frame.add(countersPanel, gbc);//add the COUNTER PANEL to the FRAME
+
+        //record button at the bottom
+        //create the botton panel
+        bottomPanel = new JPanel();
+        //create the record button
+        btnRecord = new JButton("Record");
+        btnRecord.setPreferredSize(new Dimension(200,40));
+        //add the record button to the BOTTOM PANEL
+        bottomPanel.add(btnRecord);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3; //span across 3 columns 
+        gbc.fill = GridBagConstraints.HORIZONTAL; //fill the panel up horizontally
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        frame.add(bottomPanel, gbc);//add the BOTTOM PANEL to the frame
+
+        frame.setVisible(true);//make the frame visible
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//close the frame
+
+        //instantiate the list, queues, and stacks
+        customerList = new LinkedList<>();
+        queue1 = new LinkedList<CustomerInfo>();
+        queue2 = new LinkedList<CustomerInfo>();
+        queue3 = new LinkedList<CustomerInfo>();
+        stack1 = new Stack<>();
+        stack2 = new Stack<>();
+        stack3 = new Stack<>();
+        completeStack = new Stack<>();
+
+        //add action listener to the buttons 
+        btnShowData.addActionListener(this);
+        btnAddNewCustomer.addActionListener(this);
+        btnNextQueue1.addActionListener(this);
+        btnNextQueue2.addActionListener(this);
+        btnNextQueue3.addActionListener(this);
+        btnPayment1.addActionListener(this);
+        btnPayment2.addActionListener(this);
+        btnPayment3.addActionListener(this);
+        btnReceipt1.addActionListener(this);
+        btnReceipt2.addActionListener(this);
+        btnReceipt3.addActionListener(this);
+        btnRecord.addActionListener(this);
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getSource()==btnShowData)//if the show data button is pressed (show the added customers)
+        {
+            if(customerList.size()==0)//if the customerList size is 0 (no customer in the list)
+                JOptionPane.showMessageDialog(null, "No Customer has been added!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            else
+            {
+                subFrame("Added Data", customerList);//call the subFrame() method to display the customerList
+            }
+        }
+        else if(e.getSource()==btnAddNewCustomer)//if the add new customer button is pressed
+        {
+            if(hasReadFile)//if the file has been read 
+            {
+                JOptionPane.showMessageDialog(null,"File has already been read","ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else //if the file has not been read
+            {
+                try {
+                    //read the txt file
+                    BufferedReader br = new BufferedReader(new FileReader("service_requests.txt"));
+
+                    String inData;
+                    while ((inData = br.readLine()) != null) {
+                        // Extract the values accordingly
+                        StringTokenizer st = new StringTokenizer(inData, ";");
+                        String id = st.nextToken();
+                        String name = st.nextToken();
+                        String plateNumber = st.nextToken();
+                        String service_id = st.nextToken();
+                        String service_type = st.nextToken();
+                        double service_cost = Double.parseDouble(st.nextToken());
+                        String service_date = st.nextToken();
+                        String service_completionTime = st.nextToken();
+
+                        // Create a new ServiceInfo object for the service
+                        ServiceInfo service = new ServiceInfo(service_id, service_type, service_cost, service_date, service_completionTime);
+
+                        // Check if this customer already exists in customerList
+                        CustomerInfo customerInfo = null;
+                        for (CustomerInfo customer : customerList) {
+                            //if the customer already exist, based on the ID
+                            if (customer.getCustomerId().equals(id))
+                                customerInfo = customer;//if it does exist, store the object
+                        }
+
+                        if (customerInfo == null) {
+                            // If the customer doesn't exist, create a new CustomerInfo object
+                            customerInfo = new CustomerInfo(id, name, plateNumber);
+                            customerList.add(customerInfo);
+                        }
+
+                        // Add the service to the existing or new customer
+                        customerInfo.addItem(service);
+                        //update the total cost based on each service
+                        customerInfo.setTotalCost(service_cost);
+                    }
+                    //responsible for adding the customers to each queue accordingly
+                    for(CustomerInfo customer : customerList)
+                    {
+                        addCustomerToQueue(customer);
+                    }
+                    //set the counter label with the current customer list size
+                    counterLabel.setText("Customer: " + customerList.size());
+                    hasReadFile = true;//update with true to signalized the file has been read
+
+                    br.close();//close the buffered reader
+                } catch (Exception ex) {
+                    //if the program could not read the fiie
+                    JOptionPane.showMessageDialog(null,"Cannot find the input file!","ERROR",JOptionPane.ERROR_MESSAGE);
                 }
-                
-                // Add the service to the existing or new customer
-                customer.addItem(service);
             }
+        }
+        else if(e.getSource()==btnNextQueue1)//if the next queue button for lane 1 is pressed 
+        {
+            displayQueue(queue1, lane1);//call the displayQueue() method 
+        }
+        else if(e.getSource()==btnNextQueue2)//if the next queue button for lane 2 is pressed 
+        {
+            displayQueue(queue2, lane2);//call the displayQueue() method 
+        }
+        else if(e.getSource()==btnNextQueue3)//if the next queue button for lane 3 is pressed 
+        {
+            displayQueue(queue3, lane3);//call the displayQueue() method 
+        }
+        else if(e.getSource()==btnBack)//if the back button is pressed (for sub frame)
+        {
+            subFrame.dispose();//close the sub frame 
+        }
+        else if(e.getSource()==btnPayment1)//if the payment button for lane 1 is pressed 
+        {
+            payment(queue1, lane1, stack1);//call the payment method 
+            updateCounterLabel();//call the update counter method 
+        }
+        else if(e.getSource()==btnPayment2)//if the payment button for lane 2 is pressed 
+        {
+            payment(queue2, lane2, stack2);//call the payment method 
+            updateCounterLabel();//call the update counter method
+        }
+        else if(e.getSource()==btnPayment3)//if the payment button for lane 3 is pressed 
+        {
+            payment(queue3, lane3, stack3);//call the payment method 
+            updateCounterLabel();//call the update counter method 
+        }
+        else if(e.getSource()==btnReceipt1)//if the receipt button for lane 1 is pressed 
+        {
+            receipt(stack1);//call the receipt method 
+        }
+        else if(e.getSource()==btnReceipt2)//if the receipt button for lane 2 is pressed 
+        {
+            receipt(stack2);//call the receipt method 
+        }
+        else if(e.getSource()==btnReceipt3)//if the receipt button for lane 3 is pressed 
+        {
+            receipt(stack3);//call the receipt method 
+        }
+        else if(e.getSource()==btnRecord)//if the record button is pressed
+        {
+            subFrame("Completed Transaction", completeStack);// call the subFrame() method 
+        }
+    }
+    //method to add the customers to each queue accordingly
+    private void addCustomerToQueue(CustomerInfo customer) 
+    {
+        int serviceCount = customer.getServiceList().size();//get the amount of requested services
 
-            // Print all customers and their services
-            for (CustomerInfo customer : customerList) {
-                System.out.println(customer);
+        if (serviceCount <= 3)//if the customer has at most 3 requested services
+        {
+            if (laneAlternator % 2 == 0) 
+            {
+                queue1.offer(customer);//add it to the first queue(lane 1)
+            } 
+            else 
+            {
+                queue2.offer(customer);//add it to the second queue(lane 2)
             }
-
-            br.close();
-        } catch (Exception ex) {
-            
+            laneAlternator++; // Alternate lane for the next customer
+        } 
+        else //if the customer has more than 3 requested services
+        {
+            queue3.offer(customer); //add it to the third queue(lane 3)
         }
     }
 
-    // Helper method to find a customer by ID
-    private static CustomerInfo findCustomerById(List<CustomerInfo> customerList, String id) {
-        for (CustomerInfo customer : customerList) {
-            if (customer.getCustomerId().equals(id)) {
-                return customer;
-            }
+    //method to display each queue accordingly
+    private void displayQueue(Queue<CustomerInfo> queue, JTextArea textArea) {
+        textArea.setText("");//reset the text area every time the button is pressed 
+        Iterator<CustomerInfo> it = queue.iterator();//iterator to go through the queue
+        int count = 0;//count to stop the loop 
+
+        //while loop to display 5 customers at a time
+        //if the queue is not empty and count is below 5
+        while (it.hasNext() && count < 5)
+        {
+            CustomerInfo customerInfo = it.next();
+            textArea.append(customerInfo.toString() + "\n"); // Display each customer's info
+            count++;//increment the count by 1
         }
-        return null;
+        //if the count is 0
+        //if the queue is empty 
+        if (count == 0) 
+        {
+            JOptionPane.showMessageDialog(null, "Queue is empty!", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    //method for payment
+    private void payment(Queue<CustomerInfo> queue, JTextArea textArea, Stack<CustomerInfo> stack){
+        CustomerInfo customerInfo = queue.poll();//remove the element from the queue and store it 
+
+        if(customerInfo != null)//if its not null
+        {
+            //display the appropriate message
+            JOptionPane.showMessageDialog(null,"Payment has been processed for "+customerInfo, "Transaction Completed", JOptionPane.INFORMATION_MESSAGE);
+            //update the text area accordingly after each transaction
+            String currentText = textArea.getText();
+            String newText = currentText.replace(customerInfo.toString(), "");
+            textArea.setText(newText);
+            //push the customer into both stacks
+            stack.push(customerInfo);//one stack for each receipt of each lane
+            completeStack.push(customerInfo);//another for overall completed transactions
+
+        }
+        else //if the queue is null
+            JOptionPane.showMessageDialog(null,"Queue is empty!","ERROR", JOptionPane.ERROR_MESSAGE);
+    }
+    //receipt method to display completed transactions for each lane
+    public void receipt(Stack<CustomerInfo> stack)
+    {
+        subFrame("Receipt", stack);//call the subFrame method 
+    }
+    //the subFrame method to create subFrame(to display necessary info accordingly)
+    public void subFrame(String title, List list) 
+    {
+        //create the frame
+        subFrame = new JFrame();
+        subFrame.setSize(400, 400);
+        subFrame.setTitle(title);
+        subFrame.setLayout(new GridBagLayout());  // Set layout for subFrame
+        GridBagConstraints subGBC = new GridBagConstraints();
+        subGBC.insets = new Insets(5, 5, 5, 5);
+
+        //create the text area 
+        JTextArea subTextArea = new JTextArea();
+        //print out the output in a LIFO manner
+        for (int i = list.size() - 1; i >= 0; i--)
+        {
+            subTextArea.append(list.get(i).toString());
+        }
+        subTextArea.setEditable(false);//make the text area uneditable 
+        JScrollPane scrollPane = new JScrollPane(subTextArea);//add scroll to the text area 
+        subGBC.gridx = 0;
+        subGBC.gridy = 0;
+        subGBC.gridwidth = 3; //Span across 3 columns 
+        subGBC.fill = GridBagConstraints.BOTH;//fill out the scrollpane both vertically and horizontally
+        subGBC.weightx = 1.0;//dynamically change the size horizontally
+        subGBC.weighty = 1.0;//dynamically change the size vertically
+        subFrame.add(scrollPane, subGBC);//Add text area to frame within scroll pane
+
+        //Create the go back button 
+        btnBack = new JButton("Go Back");
+        btnBack.addActionListener(this);//add action listener to the button
+        subGBC.gridy = 1;
+        subGBC.gridwidth = 1;
+        subGBC.fill = GridBagConstraints.NONE;
+        subGBC.weightx = 0;
+        subGBC.weighty = 0;
+        subFrame.add(btnBack, subGBC);  //Add the go back button subFrame
+
+        //Display frame
+        subFrame.setVisible(true);
+        subFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//Close subFrame
+
+    }
+    //method to update the counter label after each transaction 
+    public void updateCounterLabel(){
+        counterLabel.setText("Customer: " + (queue1.size()+queue2.size()+queue3.size()));
     }
 }
