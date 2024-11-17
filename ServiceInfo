@@ -1,13 +1,17 @@
 
 public class ServiceInfo
 {
-    //declaration of attributes
+    //declare the service's id
     private String serviceId;
+    //declare the service's type
     private String serviceType;
+    //declare the service's cost
     private double serviceCost;
+    //declare the date of service
     private String serviceDate;
+    //declare the estimated completion time
     private String estimatedCompletionTime;
-    private int selectedQuantity;
+    
     //constructor without parameters 
     public ServiceInfo() {
         serviceId = null;
@@ -15,7 +19,6 @@ public class ServiceInfo
         serviceCost  = 0.0;
         serviceDate = null;
         estimatedCompletionTime = null;
-        selectedQuantity = 0;
     }
     //constructor with parameter
     public ServiceInfo(String id, String type, double cost, String date, String completionTime) {
@@ -24,68 +27,60 @@ public class ServiceInfo
         serviceCost = cost;
         serviceDate = date;
         estimatedCompletionTime = completionTime;
-        selectedQuantity = 0;
     }
+    
     //Mutator methods
+    //set the service id
     public void setServiceId(String id) {
         serviceId = id;
     }
-
+    //set the service type 
     public void setServiceType(String type) {
         serviceType = type;
     }
-
+    //set the service cost
     public void setServiceCost(double cost) {
         serviceCost = cost;
     }
-
+    //set the service date 
     public void setServiceDate(String date) {
         serviceDate = date;
     }
-
+    //set the estimated completion time 
     public void setEstimatedCompletionTime(String completionTime) {
         estimatedCompletionTime = completionTime;
     }
-
-    public void setSelectedQuantity(int quantity) {
-        selectedQuantity = quantity;
-    }
+    
     //accessor methods
+    //return the service id 
     public String getServiceId() {
         return serviceId;
     }
-
+    //return the service type
     public String getServiceType() {
         return serviceType;
     }
-
+    //return the service cost 
     public double getServiceCost() {
         return serviceCost;
     }
-
+    //return the date of service
     public String getServiceDate() {
         return serviceDate;
     }
-
+    //return the estimated time completion
     public String getServiceEstimatedCompletionTime() {
         return estimatedCompletionTime;
     }
-
-    public int getSelectedQuantity() {
-        return selectedQuantity;
-    }
-    //increment the quantity
-    public void incrementQuantity() {
-        selectedQuantity++;
-    }
+    
     //print the output
     @Override
     public String toString() {
         return "Service ID: " + serviceId + 
-        ", Type: " + serviceType + 
-        ", Cost: $" + serviceCost + 
-        ", Date: " + serviceDate + 
-        ", Estimated Completion: " + estimatedCompletionTime;
+        " Type: " + serviceType + 
+        " Cost: RM" + serviceCost + 
+        " Date: " + serviceDate + 
+        " Estimated Completion: " + estimatedCompletionTime;
     }
 
 }
