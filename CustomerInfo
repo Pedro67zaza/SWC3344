@@ -2,11 +2,17 @@
 import java.util.*;
 public class CustomerInfo
 {
-    //Declaration of attributes
+    //declare the customer's id
     private String customerId;
+    //declare the customer's name
     private String customerName;
+    //declare the customer's car's plate no
     private String vehiclePlateNumber;
+    //declare the total cost
+    private double sum = 0.0;
+    //declare the service list for each customer
     private List <ServiceInfo> serviceList;
+    
     //Constructor without parameters 
     public CustomerInfo() {
         customerId = null;
@@ -20,32 +26,43 @@ public class CustomerInfo
         vehiclePlateNumber = plateNumber;
         serviceList = new LinkedList<>();
     }
-
-    //Mutator methods
+    //mutator methods
+    //set the customer's id
     public void setCustomerId(String id) {
         customerId = id;
     }
-
+    //set the customer's name
     public void setCustomerName(String name) {
         customerName = name;
     }
-
+    //set the customer's plate number
     public void setVehiclePlateNumber(String plateNumber) {
         vehiclePlateNumber = plateNumber;
     }
-
+    //set the sum(total cost)
+    public void setTotalCost(double cost)
+    {
+        sum += cost;//update the sum by adding the value of each service
+    }
+    
     //accessor methods
+    //return the customer's id
     public String getCustomerId() {
         return customerId;
     }
-
+    //return the customer's name
     public String getCustomerName() {
         return customerName;
     }
-
+    //return the customer's plate number
     public String getVehiclePlateNumber() {
         return vehiclePlateNumber;
     }
+    //return the sum
+    public double getTotalCost() {
+        return sum;
+    }
+    
     //add the service to the service list
     public void addItem(ServiceInfo service) {
         serviceList.add(service);
@@ -54,18 +71,21 @@ public class CustomerInfo
     public List<ServiceInfo> getServiceList() {
         return serviceList;
     }
+
     //to string method to display info
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Customer ID: ").append(customerId)
-        .append(", Name: ").append(customerName)
-        .append(", Plate Number: ").append(vehiclePlateNumber)
+        sb.append("\nCustomer ID: ").append(customerId)
+        .append(" Name: ").append(customerName)
+        .append(" Plate Number: ").append(vehiclePlateNumber)
         .append("\nServices:\n");
 
         for (ServiceInfo service : serviceList) {
             sb.append("  - ").append(service.toString()).append("\n");
         }
+        
+        sb.append("Total Cost: RM").append(String.format("%.2f",sum)).append("\n");
 
         return sb.toString();
     }
