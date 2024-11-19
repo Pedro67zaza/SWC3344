@@ -352,44 +352,74 @@ public class MainVehicleCenter implements ActionListener{
 
     //method to display each queue accordingly
     private void displayQueue(Queue<CustomerInfo> queue, JTextArea textArea) {
-        textArea.setText("");//reset the text area every time the button is pressed 
+        String text = textArea.getText();//get the current contents on the text area and store it
+        int customerCount = 0;
+        //check if the customers have been displayed on the screen
+        for (String line : text.split("\n")) {
+            //only count the customer
+            if (line.trim().startsWith("Customer")) {
+                customerCount++;
+            }
+        }
+        
         Iterator<CustomerInfo> it = queue.iterator();//iterator to go through the queue
         int count = 0;//count to stop the loop 
 
-        //while loop to display 5 customers at a time
-        //if the queue is not empty and count is below 5
-        while (it.hasNext() && count < 5)
+        if(customerCount != 0)//if the queue is not empty
+            JOptionPane.showMessageDialog(null, "Empty the current queue first!", "ERROR", JOptionPane.ERROR_MESSAGE);
+        else
         {
-            CustomerInfo customerInfo = it.next();
-            textArea.append(customerInfo.toString() + "\n"); // Display each customer's info
-            count++;//increment the count by 1
-        }
-        //if the count is 0
-        //if the queue is empty 
-        if (count == 0) 
-        {
-            JOptionPane.showMessageDialog(null, "Queue is empty!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            //reset the text area every time customers are displayed
+            textArea.setText("Current Queue:\n");
+            //while loop to display 5 customers at a time
+            //if the queue is not empty and count is below 5
+            while (it.hasNext() && count < 5)
+            {
+                CustomerInfo customerInfo = it.next();
+                textArea.append(customerInfo.toString() + "\n"); // Display each customer's info
+                count++;//increment the count by 1
+            }
+            
+            //if the queue is empty or if the count is 0 
+            if (count == 0) 
+            {
+                JOptionPane.showMessageDialog(null, "Queue is empty!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     //method for payment
+    //the payment method takes in queue, text area, and stack to ensure it can be used across all lanes
     private void payment(Queue<CustomerInfo> queue, JTextArea textArea, Stack<CustomerInfo> stack){
-        CustomerInfo customerInfo = queue.poll();//remove the element from the queue and store it 
-
-        if(customerInfo != null)//if its not null
-        {
-            //display the appropriate message
-            JOptionPane.showMessageDialog(null,"Payment has been processed for "+customerInfo, "Transaction Completed", JOptionPane.INFORMATION_MESSAGE);
-            //update the text area accordingly after each transaction
-            String currentText = textArea.getText();
-            String newText = currentText.replace(customerInfo.toString(), "");
-            textArea.setText(newText);
-            //push the customer into both stacks
-            stack.push(customerInfo);//one stack for each receipt of each lane
-            completeStack.push(customerInfo);//another for overall completed transactions
-
+        String text = textArea.getText();//get the current contents on the text area and store it
+        int customerCount = 0;
+        //check if the customers have been displayed on the screen
+        for (String line : text.split("\n")) {
+            //only count the customer
+            if (line.trim().startsWith("Customer") && !line.trim().isEmpty()) {
+                customerCount++;
+            }
         }
-        else //if the queue is null
-            JOptionPane.showMessageDialog(null,"Queue is empty!","ERROR", JOptionPane.ERROR_MESSAGE);
+
+        if(customerCount == 0)//if nothing is displayed on the screen
+            JOptionPane.showMessageDialog(null,"Press the next queue!","ERROR", JOptionPane.ERROR_MESSAGE);
+        else
+        {
+            CustomerInfo customerInfo = queue.poll();//remove the element from the queue and store it
+            if(customerInfo != null)//if its not null
+            {
+                //display the appropriate message
+                JOptionPane.showMessageDialog(null,"Payment has been processed for "+customerInfo, "Transaction Completed", JOptionPane.INFORMATION_MESSAGE);
+                //update the text area accordingly after each transaction
+                String currentText = textArea.getText();
+                String newText = currentText.replace(customerInfo.toString(), "");
+                textArea.setText(newText);
+                //push the customer into both stacks
+                stack.push(customerInfo);//one stack for each receipt of each lane
+                completeStack.push(customerInfo);//another for overall completed transactions
+            }
+            else //if the queue is null
+                JOptionPane.showMessageDialog(null,"Queue is empty!","ERROR", JOptionPane.ERROR_MESSAGE);
+        }
     }
     //receipt method to display completed transactions for each lane
     public void receipt(Stack<CustomerInfo> stack)
@@ -397,7 +427,7 @@ public class MainVehicleCenter implements ActionListener{
         subFrame("Receipt", stack);//call the subFrame method 
     }
     //the subFrame method to create subFrame(to display necessary info accordingly)
-    public void subFrame(String title, List list) 
+    public void subFrame(String title,List list) 
     {
         //create the frame
         subFrame = new JFrame();
